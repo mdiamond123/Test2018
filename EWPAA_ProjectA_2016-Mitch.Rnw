@@ -486,33 +486,11 @@ ggplot(data = newdata, aes(x = ab, y = cb, col = ef)) +
   theme(axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
         axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 @
+\caption[Example 3 of Testing for Outliers]{Example of Testing for Outliers. Two contiguous outliers are found and the material
+around the outliers is quarantined.}
 
-
-\begin{figure}[!h]
-
-
-\begin{picture}(200,100)(-20,0)
-\put(20,80){\vector(1,0){30}\makebox{   Time}}
-\put(300,65){\circle*{5}}
-\put(310,62.5){\makebox{Not Outliers}}
-\put(40,50){\circle*{5}}
-\put(80,50){\circle{5}}
-\put(120,50){\circle{5}}
-\put(160,50){\circle*{5}}
-\put(200,50){\circle*{5}}
-\put(240,50){\circle*{5}}
-\put(300,75){\circle{5} \makebox{Outliers}}
-\put(20,40){\line(1,0){230}}
-\put(20,40){\line(0,1){20}}
-\put(250,40){\line(0,1){20}}
-\put(20,60){\line(1,0){230}}
-\put(40,40){\dashbox{2}(120,20)[s]{}}
-\put(60,10){\shortstack{Quarantined\\Material}}
-
-
-\end{picture}
-\caption[Example 1 of Testing for Outliers]{Example of Testing for Outliers. Two contiguous outliers are found and the material around the outliers is quarantined.}
 \end{figure}
+
 
 \subsection{Two or more non-contiguous outliers}
 
