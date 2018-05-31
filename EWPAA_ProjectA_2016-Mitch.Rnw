@@ -442,7 +442,7 @@ For the material around the outlier, if the outlier is on the high side complian
 \put(80,50){\circle{5}}
 \put(120,50){\circle*{5}}
 \put(160,50){\circle*{5}}
-\put(200,50){\circle*{5}}
+\put(200,50){\circle*{5}} 
 \put(240,50){\circle*{5}}
 \put(300,75){\circle{5} \makebox{Outlier}}
 \put(20,40){\line(1,0){230}}
