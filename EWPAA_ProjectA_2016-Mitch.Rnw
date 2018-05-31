@@ -432,30 +432,27 @@ For the material around the outlier, if the outlier is on the high side complian
 
 
 \begin{figure}[!h]
+<<echo=FALSE, dev='pdf', fig.dim=c(7,1)>>=
+library(ggplot2)
+ab <- 1:6
+cb <- 1
+ef <- c("Not Outlier", "Outlier", "Not Outlier", "Not Outlier", "Not Outlier", "Not Outlier")
+newdata <- data.frame(ab, cb, ef)
 
-
-\begin{picture}(200,100)(-20,0)
-\put(20,80){\vector(1,0){30}\makebox{   Time}}
-\put(300,65){\circle*{5}}
-\put(310,62.5){\makebox{Not Outliers}}
-\put(40,50){\circle*{5}}
-\put(80,50){\circle{5}}
-\put(120,50){\circle*{5}}
-\put(160,50){\circle*{5}}
-\put(200,50){\circle*{5}}
-\put(240,50){\circle*{5}}
-\put(300,75){\circle{5} \makebox{Outlier}}
-\put(20,40){\line(1,0){230}}
-\put(20,40){\line(0,1){20}}
-\put(250,40){\line(0,1){20}}
-\put(20,60){\line(1,0){230}}
-\put(40,40){\dashbox{2}(80,20)[s]{}}
-\put(40,10){\shortstack{Quarantined\\Material}}
-
-\end{picture}
+ggplot(data = newdata, aes(x = ab, y = cb, col = ef)) +
+  geom_rect(mapping = aes(xmin = 0.5, xmax = 6.5, ymin = 0.9, ymax = 1.1), fill = "white", alpha = 0.5) +
+  geom_rect(mapping = aes(xmin = 1, xmax =3, ymin = 0.9, ymax = 1.1), fill = "grey67") +
+  scale_color_manual(values = c("black", "white"), name = "") +
+  theme_void() +
+  geom_point(size = 3) +
+  ylim(c(0.775, 1.175)) +
+  xlim(c(0, 7.75)) +
+  geom_text(mapping = aes(x = 2, y = 0.8, label = "Quarantined Material") ) +
+  theme(axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
+        axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+@
 \caption[Example 2 of Testing for Outliers]{Example of Testing for Outliers. One Outlier is found and the material around the outlier is quarantined.}
-\end{figure}
-
+\end{figure} 
 \subsection{Two or more contiguous outliers}
 
 An example is given in Figure~3. In this case a sample size of 3 is used and a retest has been made resulting in a total sample size of 6 panels. The second and third panel means have been identified as  outliers.
