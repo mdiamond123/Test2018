@@ -447,7 +447,7 @@ ggplot(data = newdata, aes(x = ab, y = cb, col = ef)) +
   geom_point(size = 3) +
   ylim(c(0.775, 1.175)) +
   xlim(c(0, 7.75)) +
-  geom_text(mapping = aes(x = 2, y = 0.8, label = "Quarantined Material") ) +
+  geom_text(mapping = aes(x = 2, y = 0.8, label = "Quarantined Material") ) + 
   theme(axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
         axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 @
