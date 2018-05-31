@@ -1,0 +1,965 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx, color}
+\usepackage{amsmath}
+\newcommand\given[1][]{\:#1\vert\:}
+\usepackage{framed}
+\usepackage{enumitem}
+\makeatletter
+\newenvironment{kframe}{%
+  \def\at@end@of@kframe{}%
+  \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+  \fi\fi%
+  \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+  \colorbox{shadecolor}{##1}\hskip-\fboxsep
+    % There is no \\@totalrightmargin, so:
+      \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+  \MakeFramed {\advance\hsize-\width
+    \@totalleftmargin\z@ \linewidth\hsize
+    \@setminipage}}%
+{\par\unskip\endMakeFramed%
+  \at@end@of@kframe}
+\makeatother
+\usepackage[margin=0.7in]{geometry}
+
+\pagestyle{fancy}
+\usepackage{mathtools}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+%\SweaveOpts{concordance=FALSE}
+
+\begin{titlepage}
+
+\begin{flushleft}
+\includegraphics[width=0.5\textwidth]{esquantlogo.pdf}\\[2cm]
+\end{flushleft}
+
+\begin{center}
+
+
+
+{ \huge \bfseries Quarantine and Evaluation procedures in the event of a product failure.}\\[1cm]
+
+\textsc{\Large \bfseries A report for EWPAA}\\[2cm]
+
+
+
+\textsc{\Large \bfseries Neil Diamond, B.Sc.(Hons), Ph.D., A.Stat.}\\[1cm]
+
+\textsc{\Large \bfseries Ewa Sztendur, B.Sc., Ph.D., A.Stat.}\\[1cm]
+
+\textsc{\Large \bfseries Mitchell Diamond, B.A.}\\[1cm]
+
+
+
+\textsc{\Large \bfseries ESQUANT Statistical Consulting}\\[1cm]
+
+
+
+\vfill
+
+% Bottom of the page
+{\large \bfseries \today}
+
+\end{center}
+
+\end{titlepage}
+
+
+%\AddToShipoutPictureBG{%
+  %  \AtPageLowerLeft{\\\includegraphics[width=0.3\textwidth]{esquantlogo}}}
+
+\tableofcontents
+
+\listoftables
+
+\listoffigures
+
+\setcounter{page}{2} 
+
+\clearpage
+
+\pagestyle{fancy}
+
+\section{Summary}
+
+The EWPAA operate a certification scheme to guarantee that products that reach the market satisfy the requirements of the Australian Standard. This document summarises recommended procedures when a failed test result occurs.
+
+The sampling and a testing program is for a batch. A failed test result applies to the batch as a whole unless there is some reason to question whether the batch is homogeneous.To check for homogeneity of the batch various tests for outliers can be applied. The appropriate tests for outliers are given when the standard deviation is estimated, based on a rolling estimate, or known.
+
+If outliers are established then single sampling $k$ factors can be used to test the remaining material for conformance. The report also gives methods to evaluate material around the outliers.
+
+
+\section{Terms of Reference}
+
+
+  
+  \begin{framed}
+
+
+
+
+
+
+
+\subsection*{Project A.  Quarantine and Evaluation procedures in the event of a product failure.}
+
+
+
+
+
+ 
+
+Objective:  Enable the EWPAA to sample, test, and evaluate product sourced from the marketplace and assess conformance.
+
+
+
+Expected Deliverables:
+  
+\begin{enumerate}[label=\alph*)]
+
+\item  Procedures which Identify the material that is represented by a failed test result, and therefore material which should be quarantined.  If necessary separate procedures to apply to estimated, rolling, and known SD procedures.
+
+\item  Define acceptable methods for re-evaluating the quarantined material (or sub-sets of that material) to identify material which does or does not conform with requirements. 
+
+\item  Define unacceptable methods for re-evaluating quarantined material with an explanation of why they are unacceptable.
+
+\end{enumerate}
+
+
+
+\end{framed}
+
+\section{Notation}
+
+\begin{eqnarray*}
+\mu & = & \mbox{population mean with estimate $\overline{x}}$\\
+\sigma & = & \mbox{between panel standard deviation with estimate $s$}\\
+n & = & \mbox{the number of panels sampled}\\
+x_{(i)}& = & \mbox{the $i$th order statistic, the $i$th largest sample mean}\\
+x_{(1)}& = & \mbox{the minimum panel mean} \\
+x_{(n)} & = & \mbox{the maximum panel mean}
+\end{eqnarray*}
+
+
+
+
+
+
+\section{Background and Methodology}
+
+The EWPAA operate a certification scheme to guarantee that products that reach the market satisfy the requirements of the Australian Standard. The sampling and testing procedure is shown in Figure~1. 
+
+\begin{figure}[!h]
+\centering
+<<keep.fig=TRUE, dev='pdf', fig.height=5, fig.show='hold',echo=FALSE, message=FALSE>>=
+library(diagram)
+nodePos=coordinates(rep(3,4))
+plot.new()
+straightarrow(nodePos[1,], nodePos[2,], arr.pos=.6)
+straightarrow(nodePos[2,], nodePos[3,])
+straightarrow(nodePos[2,], nodePos[5,], arr.pos=.65)
+straightarrow(nodePos[5,], nodePos[6,], arr.pos=0.65)
+straightarrow(nodePos[6,], nodePos[9,], arr.pos=.65)
+straightarrow(nodePos[9,], nodePos[8,], arr.pos=.6)
+straightarrow(nodePos[8,], nodePos[7,])
+straightarrow(nodePos[8,], nodePos[11,], arr.pos=0.65)
+straightarrow(nodePos[6,], nodePos[3,], arr.pos=0.6)
+#straightarrow(nodePos[6,], nodePos[5,], arr.pos=0.4)
+
+textrect(nodePos[1,],.15,.05,lab="Sample and Test")
+textdiamond(nodePos[2,],.10,.10,lab="Pass?")
+textrect(nodePos[3,],.13,.05,lab="Batch complies")
+textrect(nodePos[5,],.18,.05,lab="Resample and retest")
+textdiamond(nodePos[6,],.10,.10,lab="Pass?")
+textrect(nodePos[9,],.14,.05,lab="Test for Outliers")
+textdiamond(nodePos[8,],.10,.1,lab="Outliers?")
+textrect(nodePos[11,],.2,.05,lab="Batch does not comply",xpd=T)
+textrect(nodePos[7,],.13,.1,lab="Isolate batch\naround outliers",xpd=T)
+textplain((nodePos[2,]+nodePos[3,])/2+c(0,0.05),0.1,lab="Yes")
+textplain((nodePos[2,]+nodePos[5,])/2+c(0.05,-0.025),0.1,lab="No")
+textplain((nodePos[6,]+nodePos[3,])/2+c(0.05,0),0.1,lab="Yes")
+textplain((nodePos[6,]+nodePos[9,])/2+c(0.05,-0.025),0.1,lab="No")
+textplain((nodePos[7,]+nodePos[8,])/2+c(0,0.05),0.1,lab="Yes")
+textplain((nodePos[8,]+nodePos[11,])/2+c(0.05,-0.025),0.1,lab="No")
+@
+\caption{Sampling and Testing Procedure}
+\end{figure}
+
+
+The stages of the sampling and testing program are:\footnote{The description is for an estimated standard deviation. Members of the EWPAA may choose to use a rolling standard deviation based on 30 panels, or a known standard deviation when a control chart is being used for monitoring the process. In these cases the $k$ factors are different.}: 
+\begin{description}
+\item[Sample and test] A sample of panels is taken and for each panel a number of tests are carried out for important quality variables such as IB and MOR. The mean and standard deviation of the panel means, $\overline{x}_1$ and $s_1$ are calculated, and the variable
+\[T_1=\overline{x}_1-ks_1\]
+is compared to the specified 5th percentile in the standard where $k$ is chosen so that there is a 50\% chance of acceptance (taking into account retesting) when 95\% of the panel means exceed the specified 5th percentile. The $k$ factors for various sample sizes, derived in Diamond (2016), are given in Table~\ref{kfactorsretesting}. If $T_1$ is greater than the specified 5th percentile, the batch complies with the standard.
+
+
+<<echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, results='asis'>>=
+library(xtable)
+addtorow <- list()
+addtorow$pos <- list(0)
+addtorow$command <- "
+& \\multicolumn{3}{c}{Standard Deviation} \\\\ \\cline{2-4}
+\\multicolumn{1}{c}{Sample Size} &
+\\multicolumn{1}{c}{Estimated} &
+\\multicolumn{1}{c}{Rolling} &
+\\multicolumn{1}{c}{Known} \\\\ "
+
+
+kvalueretest <- function(n, stdquality = 0.95, stdaccprob = 0.5, stdev = c("estimated","known","rolling")){
+  library(mvtnorm)
+  library(cubature)
+  stdev <- match.arg(stdev)
+  if(stdev=="estimated") {
+    accprob1 <- function(k, ...){
+      g2 <- function(y, ...){
+        x <- pmvnorm(lower=rep(-Inf,2), upper=c(sqrt(n)*(k/sqrt(n-1)*sqrt(y[1])-qnorm(stdquality)),
+                                                sqrt(2*n)*(qnorm(stdquality)-k/sqrt(2*(n-1))*sqrt(y[1]+y[2]))),
+                     corr=matrix(c(1,-1/sqrt(2),-1/sqrt(2),1),2,2))*dchisq(y[1], n-1)*dchisq(y[2],n-1)
+        attributes(x) <- NULL
+        x
+      }
+      g1 <- function(y, ...){
+        x <- (pnorm(sqrt(n)*(k*sqrt(y/(n-1))-qnorm(stdquality)))*dchisq(y,n-1))
+        x
+      }
+      adaptIntegrate(g2, lowerLimit=rep(0,2), upperLimit=rep(2000,2), k=k, n=n)$integral+1-integrate(g1, lower=0,upper=Inf,k=k,n=n)[[1]]-stdaccprob
+    }
+    return(uniroot(accprob1, interval=c(1,10))$root)
+  } else {
+    if(stdev=="known") {
+      accprob2 <- function(k, ...){
+        1 - pnorm(sqrt(n)*(k+qnorm(1-stdquality))) - stdaccprob +
+          pmvnorm(lower=rep(-Inf,2),
+                  upper=c(sqrt(n)*(k+qnorm(1-stdquality)),sqrt(2*n)*(-k-qnorm(1-stdquality))),
+                  corr=matrix(c(1,-1/sqrt(2),-1/sqrt(2),1),2,2))
+      }
+      return(uniroot(accprob2, interval=c(1,10))$root)
+    }
+
+    if(stdev=="rolling"){
+      accprob3 <- function(k, ...){
+        g3 <- function(y, k=k, n=n, ...){
+          x <- pmvnorm(lower=rep(-Inf,2), upper=c(sqrt(n)*(k*sqrt(y/29)-qnorm(stdquality)),
+                                                  sqrt(2*n)*(1.645-k*sqrt(y/29))),
+                       corr=matrix(c(1,-1/sqrt(2),-1/sqrt(2),1),2,2))*dchisq(y, 29)
+          attributes(x) <- NULL
+          x
+        }
+        g4 <- function(y, ...){
+          x <- (pnorm(sqrt(n)*(k*sqrt(y/29)-1.645))*dchisq(y,29))
+          x
+        }
+        adaptIntegrate(g3, lowerLimit=0, upperLimit=2000, k=k, n=n)$integral+
+          1-integrate(g4, lower=0,upper=Inf,k=k,n=n)[[1]]-stdaccprob
+      }
+      return(uniroot(accprob3, interval=c(1,100))$root)
+    }
+  }
+}
+
+
+
+kmatretest <- matrix(NA, 10, 3)
+
+kmatretest[,1] <- c(NA, sapply(2:10, kvalueretest))
+kmatretest[,2] <- sapply(1:10, kvalueretest, stdev="rolling")
+kmatretest[,3] <- sapply(1:10, kvalueretest, stdev="known")
+
+library(xtable)
+print(xtable(kmatretest, digits=3, label="kfactorsretesting",align=rep("c",4), caption="$k$ factors for EWPAA sampling and testing program (Assuming re-testing allowed)."),
+      add.to.row=addtorow,include.colnames=FALSE)
+@
+
+
+
+
+\item[Resample and retest] If $T_1$ is less than the specified 5th percentile, a further set of samples needs to be taken. The resample should as near as possible ``fill in the gaps" of the original sample. For example, if panels were taken about every four hours in the original sample, then the resample should consist of panels corresponding to material at two hours, six hours, and so on. The mean and standard deviation of the resampled panel means, $\overline{x}_2$ and $s_2$ are calculated, and the variable
+\[T_2=\frac{\overline{x}_1+\overline{x}_2}{2}-k\sqrt{\frac{s_1^2+s_2^2}{2}}\]
+is compared to the specified 5th percentile in the standard. If $T_2$ is greater than the specified 5th percentile, the batch complies with the standard, otherwise the batch does not comply with the standard.
+\item[Test for Outliers]  If $T_2$ is less than the specified 5th percentile, then a decision needs to be made as to whether the batch\footnote{A batch corresponds to a production run under consistent conditions, where there is set-up phase followed by a monitoring and production phase.} as a whole needs to be quarantined, or whether only part of the batch must be quarantined. One important point is that the sampling and testing program is for a batch as a whole unless there is some reason to question whether the batch is homogeneous. Various test for outliers can be conducted to determine whether the batch can be considered heterogeneous or homogeneous. If outliers are found then material around the outlying observations should be quarantined. The remaining material should be evaluated for compliance with the standard, using the single-sampling $k$ factors shown in Table~\ref{kfactorsnoretesting}.
+
+
+
+
+<<echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, results='asis'>>=
+library(xtable)
+addtorow <- list()
+addtorow$pos <- list(0)
+addtorow$command <- "
+& \\multicolumn{3}{c}{Standard Deviation} \\\\ \\cline{2-4}
+\\multicolumn{1}{c}{Sample Size} &
+\\multicolumn{1}{c}{Estimated} &
+\\multicolumn{1}{c}{Rolling} &
+\\multicolumn{1}{c}{Known} \\\\ "
+
+
+kvalue <- function(n, stdquality=0.95, stdaccprob=0.5, stdev=c("estimated","rolling","known")){
+  stdev <- match.arg(stdev)
+  if (stdev=="known") {kval <- -qnorm(1-stdquality) + qnorm(1-stdaccprob)/sqrt(n)} else 
+    {if(stdev=="estimated"){degfreedom <- n-1} else if(stdev=="rolling"){degfreedom <- 29} 
+        kval <- qt(1-stdaccprob, degfreedom, -sqrt(n)*qnorm(1-stdquality))/sqrt(n)}
+  kval
+}
+
+
+
+kmat <- matrix(NA, 20, 3)
+
+kmat[,1] <- c(NA, sapply(2:20, kvalue))
+kmat[,2] <- sapply(1:20, kvalue, stdev="rolling")
+kmat[,3] <- sapply(1:20, kvalue, stdev="known")
+
+library(xtable)
+print(xtable(kmat, digits=3, label="kfactorsnoretesting",align=rep("c",4), caption="$k$ factors for EWPAA sampling and testing program (single sampling)."),
+      add.to.row=addtorow,include.colnames=FALSE)
+@
+
+
+
+\end{description}
+
+
+
+The standard does not specify the number of samples to be taken in a batch. The larger the number of samples that are taken the less likely it will be that ``good product" (i.e. where less than 5\% of the product is below the specified 5th percentile) will be rejected and also that ``bad product"(i.e where more than 5\% of the product is above the specified 5th percentile) will be accepted.
+
+\section{Tests for Outliers}
+
+Barnett and Lewis (1994) tabulate various outlier procedures available in the literature. They present procedures labelled $\mbox{N}$, $\mbox{N}\nu$ (read ``N nu"), and $\mbox{N}\sigma$ (read ``N sigma"):
+
+\begin{description}
+\item[$\mbox{N}$] corresponds to when $\mu$ and \sigma^2$ are unknown. (i.e. \emph{estimated standard deviation} in the terms of reference.)
+\item[$\mbox{N}\nu$] corresponds to when $\mu$ is unknown but there an estimate of $\sigma^2$ with $\nu$ degrees of freedom available. (i.e. \emph{rolling standard deviation} in the terms of reference.)
+\item[$\mbox{N}\sigma$] corresponds to when $\mu$ is unknown but $\sigma$ is known. (i.e. \emph{known standard deviation} in the terms of reference.)
+\end{description}
+
+For each of these cases, there are a number of outlier tests available. These are:
+\begin{description}
+\item[Testing for one outlier] The simplest case is when testing for one extreme observation, either on the low or high side. 
+\item[Testing for two or more outliers in the same direction] However, sometimes there might be more two or more suspected outliers which might ``mask" the test for an extreme outlier. In this case the number of possible outliers need to be specified. Note that the number of possible outliers depends on the number of panels selected (including retests). For example, to test for two outliers at least five panels need to have been sampled, while to test for three outliers, at least seven panels need to have been sampled.
+\item[Testing for a high and low outlier pair] We could also test for a high and low outlier pair.
+\end{description}
+
+\subsection{Estimated Standard Deviation}
+
+There are a number of tests given by Barnett and Lewis. In our opinion the most suitable ones for members of EWPAA to use are:
+
+\begin{description}
+\item[$\mbox{N2}$] Two-sided discordancy test of an extreme outlier in a normal sample with $\mu$ and $\sigma^2$ unknown. Test statistic given by
+\[T_{N2}=\max \left( \frac{x_{(n)}-\overline{x}}{s}, \frac{\overline{x}-x_{(1)}}{s} \right) \]
+i.e. the maximum of the difference  between the maximum and mean divided by the estimated standard deviation and the difference between the mean and the minimum divided by the estimated standard deviation.
+Critical values for $T_{N2}$ are given in Table~\ref{TN2}. 
+\item[$\mbox{N3a}$] Two-sided discordancy test of $h$ extreme outliers in a normal sample with $\mu$ and $\sigma^2$ unknown\footnote{This is a modification of $\mbox{N3}$: Discordancy test for $h$ upper outliers in a normal sample with $\mu$ and $\sigma^2$ unknown given by Barnett and Lewis (1994).}. Test statistic given by
+\[T_{N3a}=\max \left ( \frac{x_{(n-h+1)}+\ldots+x_{(n-1)}+x_{(n)}-h\overline{x}}{s}, 
+\frac{h\overline{x}-(x_{(1)}+\ldots+x_{(h-1)}+x_{(h)})}{s} \right), \]
+i.e. the maximum of the difference between the sum of the largest $h$ observations and $h$ times the mean divided by the estimated standard deviation, and the difference between $h$ times the mean and the sum of the smallest $h$ observations divided by the estimated standard deviation.
+Critical values for $T_{N3a}$ are given in Table~\ref{TN3a}. 
+\item[$\mbox{N6}$] Discordancy test of a lower and upper outlier-pair $x_{(1)},x_{(n)}$ in a normal sample with $\mu$ and $\sigma^2$ unknown. Test statistic given by
+ Test statistic given by
+\[T_{N6}=\frac{x_{(n)}-x_{(1)}}{s},\]
+i.e. divide the difference between the maximum and minimum by the estimated standard deviation.
+Critical values for $T_{N6}$ are given in Table~\ref{TN6}. 
+\end{description}
+
+\subsection{Rolling Standard Deviation}
+
+The $k$ factors can be made smaller by using previous results to help in the estimation of the between batch variation, in particular using a rolling standard deviation based on the past 30 panel samples. Barnett and Lewis (1994) consider two situations:
+\begin{itemize}
+\item Ignoring the information from the between panel standard deviation from the batch currently under consideration.
+\item Pooling the information from the between panel standard deviation from the batch currently under consideration with the rolling standard deviation. This may be more efficient.
+\end{itemize}
+We have only considered the first situation since with a rolling estimate based on 30 panels the efficiency gains are only slight, and the complexity is much increased. 
+
+The corresponding tests given by Barnett and Lewis (1994) are:
+\begin{description}
+\item[$\mbox{N$\nu$3}$] Two-sided discordancy test of an extreme outlier in a normal sample with $\mu$ unknown and an independent estimate of $\sigma^2$ known. Test statistic given by
+\[T_{N\nu 3}=\max \left( \frac{x_{(n)}-\overline{x}}{s_{\nu}}, \frac{\overline{x}-x_{(1)}}{s_{\nu}} \right) \]
+where $s_{\nu}$ is the rolling standard deviation, i.e. the maximum of the difference  between the maximum and mean divided by the rolling standard deviation and the difference between the mean and the minimum divided by the rolling standard deviation. With a rolling standard deviation based on 30 panels, $\nu=29$.
+Critical values for $T_{N \nu 3}}$ are given in Table~\ref{TNnu3}. 
+
+\item[$\mbox{N$\nu$5a}$] Two-sided discordancy test of $h$ extreme outliers in a normal sample with $\mu$ unknown and an independent estimate of $\sigma^2$ known\footnote{This is a modification of $\mbox{N$\nu$5}$: Discordancy test for $h$ upper outliers in a normal sample with $\mu$ unknown and an independent estimate of $\sigma^2$ known, given by Barnett and Lewis (1994)}. Test statistic given by \[T_{N\nu5a}=\max \left ( \frac{x_{(n-h+1)}+\ldots+x_{(n-1)}+x_{(n)}-h\overline{x}}{s_{\nu}}, 
+\frac{h\overline{x}-(x_{(1)}+\ldots+x_{(h-1)}+x_{(h)})}{s_{\nu}} \right), \]
+i.e. the maximum of the difference between the sum of the largest $h$ observations and $h$ times the mean divided by the rolling standard deviation, and the difference between $h$ times the mean and the sum of the smallest $h$ observations divided by the rolling standard deviation.
+Critical values for $T_{N\nu5a}$ are given in Table~\ref{TNnu5a}. 
+
+\item[$\mbox{N$\nu$6}$] Discordancy test of a lower and upper outlier-pair $x_{(1)},x_{(n)}$ in a normal sample with $\mu$ and and an independent estimate of $\sigma^2$ known. Test statistic given by
+\[T_{N\nu 6}=\frac{x_{(n)}-x_{(1)}}{s_{\nu}},\]
+i.e. divide the difference between the maximum and minimum by the rolling standard deviation.
+Critical values for $T_{N\nu 6}$ are given in Table~\ref{TNnu6}. 
+
+\end{description}
+
+
+
+\subsection{Known Standard Deviation}
+
+When, for example, control charts are being used to monitor the process, there is a case for assuming that the standard deviation is known. The corresponding tests given by Barnett and Lewis (1994) are: 
+
+\begin{description}
+\item[$\mbox{N$\sigma$2}$] Two-sided discordancy test of an extreme outlier in a normal sample with $\sigma^2$ known and $\mu$ unknown. Test statistic given by
+Test statistic given by
+\[T_{N\sigma 2}=\max \left( \frac{x_{(n)}-\overline{x}}{\sigma}, \frac{\overline{x}-x_{(1)}}{\sigma} \right), \]
+i.e. the maximum of the difference  between the maximum and mean divided by the  standard deviation and the difference between the mean and the minimum divided by the  standard deviation.
+Critical values for $T_{N \sigma 2}$ are given in Table~\ref{TNsigma2}. 
+
+\item[$\mbox{N$\sigma$3a}$] Two-sided discordancy test of $h$ extreme outliers in a normal sample  with $\sigma^2$ known and $\mu$ unknown\footnote{This is a modification of $\mbox{N$\sigma$3}$: Discordancy test for $h$ upper outliers in a normal sample with $\sigma^2$ known and $\mu$ unknown, given by Barnett and Lewis (1994)}. Test statistic given by \[T_{N\sigma 3a}=\max \left ( \frac{x_{(n-h+1)}+\ldots+x_{(n-1)}+x_{(n)}-h\overline{x}}{\sigma}, 
+\frac{h\overline{x}-(x_{(1)}+\ldots+x_{(h-1)}+x_{(h)})}{\sigma} \right), \]
+i.e. the maximum of the difference between the sum of the largest $h$ observations and $h$ times the mean divided by the standard deviation, and the difference between $h$ times the mean and the sum of the smallest $h$ observations divided by the standard deviation.
+Critical values for $T_{N\sigma 3a}$ are given in Table~\ref{TNsigma3a}. 
+
+\item[$\mbox{N$\sigma$6}$] Discordancy test of a lower and upper outlier-pair $x_{(1}},x_{(n)}$ in a normal sample with with $\sigma^2$ known and $\mu$ unknown. Test statistic given by
+\[T_{N\sigma 6}=\frac{x_{(n)}-x_{(1)}}{\sigma},\]
+i.e. divide the difference between the maximum and minimum by the standard deviation. 
+Critical values for $T_{N\sigma6}$ are given in Table~\ref{TNsigma6}. 
+\end{description}
+
+\section{What happens if outliers are identified?}
+
+In this section procedures to be taken when outliers are identified are given using some example situations. The appropriate actions depend on the number of outliers and in the case of more than one outlier whether the outliers are contiguous or not.
+
+\subsection{One outlier}
+
+An example is given in Figure~2. In this case a sample size of 3 is used and a retest has been made resulting in a total sample size of 6 panels. The second panel mean has been identified as an outlier.
+
+Material around the outlier should be quarantined. The remaining material can be tested for compliance using the single sampling $k$-factors, in this case using $k=1.779$ for an estimated standard deviation, $k=1.660$ for a rolling standard deviation, and $k=1.645$ for a known standard deviation, since there are 5 panel means in the remaining material.
+
+For the material around the outlier, if the outlier is on the high side compliance is achieved. If the outlier is on the low side then  one additional sample needs to be taken if the standard deviation is estimated and once the sample is taken then $k=2.339$ can be used to test for compliance. However, if a rolling or known standard deviation is used then $k=1.659$ and $k=1.645$, respectively, can be used to test for compliance.
+
+
+
+\begin{figure}[!h]
+
+
+\begin{picture}(200,100)(-20,0)
+\put(20,80){\vector(1,0){30}\makebox{   Time}}
+\put(300,65){\circle*{5}}
+\put(310,62.5){\makebox{Not Outliers}}
+\put(40,50){\circle*{5}}
+\put(80,50){\circle{5}}
+\put(120,50){\circle*{5}}
+\put(160,50){\circle*{5}}
+\put(200,50){\circle*{5}}
+\put(240,50){\circle*{5}}
+\put(300,75){\circle{5} \makebox{Outlier}}
+\put(20,40){\line(1,0){230}}
+\put(20,40){\line(0,1){20}}
+\put(250,40){\line(0,1){20}}
+\put(20,60){\line(1,0){230}}
+\put(40,40){\dashbox{2}(80,20)[s]{}}
+\put(40,10){\shortstack{Quarantined\\Material}}
+
+\end{picture}
+\caption[Example 2 of Testing for Outliers]{Example of Testing for Outliers. One Outlier is found and the material around the outlier is quarantined.}
+\end{figure}
+
+\subsection{Two or more contiguous outliers}
+
+An example is given in Figure~3. In this case a sample size of 3 is used and a retest has been made resulting in a total sample size of 6 panels. The second and third panel means have been identified as  outliers.
+
+Material around the outliers should be quarantined. The remaining material can be tested for compliance using the single sampling $k$-factors, in this case using $k=1.830$ for an estimated standard deviation, $k=1.660$ for a rolling standard deviation, and $k=1.645$ for a known standard deviation, since there are 4 panel means in the remaining material.
+
+For the material around the outliers, if the outliers are on the high side compliance is achieved. If the outliers are on the low side or they are a high-low outlier pair then $k=2.339$, $k=1.6609$ and $k=1.645$, can be used to test for compliance with estimated, rolling, and known standard deviation, respectively. 
+
+\begin{figure}[!h]
+
+
+\begin{picture}(200,100)(-20,0)
+\put(20,80){\vector(1,0){30}\makebox{   Time}}
+\put(300,65){\circle*{5}}
+\put(310,62.5){\makebox{Not Outliers}}
+\put(40,50){\circle*{5}}
+\put(80,50){\circle{5}}
+\put(120,50){\circle{5}}
+\put(160,50){\circle*{5}}
+\put(200,50){\circle*{5}}
+\put(240,50){\circle*{5}}
+\put(300,75){\circle{5} \makebox{Outliers}}
+\put(20,40){\line(1,0){230}}
+\put(20,40){\line(0,1){20}}
+\put(250,40){\line(0,1){20}}
+\put(20,60){\line(1,0){230}}
+\put(40,40){\dashbox{2}(120,20)[s]{}}
+\put(60,10){\shortstack{Quarantined\\Material}}
+
+
+\end{picture}
+\caption[Example 1 of Testing for Outliers]{Example of Testing for Outliers. Two contiguous outliers are found and the material around the outliers is quarantined.}
+\end{figure}
+
+\subsection{Two or more non-contiguous outliers}
+
+An example is given in Figure~4. In this case a sample size of 3 is used and a retest has been made resulting in a total sample size of 6 panels. The second and fifth panel means have been identified as  outliers.
+
+Material around the outliers should be quarantined. The remaining material can be tested for compliance using the single sampling $k$-factors, in this case using $k=1.830$ for an estimated standard deviation, $k=1.660$ for a rolling standard deviation, and $k=1.645$ for a known standard deviation, since there are 4 panel means in the remaining material.
+
+The two sets of material around the outliers should be considered separately. If the outliers are on the high side compliance is achieved for that set of material. If the outliers are on the low side then  one additional sample needs to be taken if the standard deviation is estimated and once the sample is taken then $k=2.339$ can be used to test for compliance. However, if a rolling or known standard deviation is used then $k=1.659$ and $k=1.645$, respectively, can be used to test for compliance.
+
+
+
+\begin{figure}[!h]
+
+
+\begin{picture}(200,100)(-20,0)
+\put(20,80){\vector(1,0){30}\makebox{   Time}}
+\put(300,65){\circle*{5}}
+\put(310,62.5){\makebox{Not Outliers}}
+\put(40,50){\circle*{5}}
+\put(80,50){\circle{5}}
+\put(120,50){\circle*{5}}
+\put(160,50){\circle*{5}}
+\put(200,50){\circle{5}}
+\put(240,50){\circle*{5}}
+\put(300,75){\circle{5} \makebox{Outlier}}
+\put(20,40){\line(1,0){230}}
+\put(20,40){\line(0,1){20}}
+\put(250,40){\line(0,1){20}}
+\put(20,60){\line(1,0){230}}
+\put(40,40){\dashbox{2}(80,20)[s]{}}
+\put(40,10){\shortstack{Quarantined\\Material}}
+\put(160,40){\dashbox{2}(80,20)[s]{}}
+\put(160,10){\shortstack{Quarantined\\Material}}
+
+\end{picture}
+\caption[Example 3 of Testing for Outliers]{Example of Testing for Outliers. Two non-contiguous outliers are found and the material around the outliers is quarantined.}
+\end{figure}
+
+
+\clearpage
+
+\section{Tables of Critical Values}
+
+All tables were based on 100,000 simulations.
+
+\subsection{Estimated Standard Deviation}
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+
+N2sim <- function(n=3){
+  xmat <- matrix(rnorm(N*n),N,n)
+  meanval <- apply(xmat,1,"mean")
+  sdval <- apply(xmat,1,"sd")
+  maxval <- apply(xmat,1,"max")
+  minval <- apply(xmat,1,"min")
+  xx <- pmax((maxval-meanval)/sdval,(meanval-minval)/sdval)
+  round(quantile(xx,probs=c(0.90,0.95,0.99)),2)
+}
+
+
+N2mat <- t(sapply(3:20,N2sim))
+row.names(N2mat) <- 3:20
+colnames(N2mat) <- paste0(c(10,5,1),"%")
+library(xtable)
+xtable(N2mat, caption="Critical Values for N2: Two-sided discordancy test of an extreme outlier in a normal sample with $\\mu$ and $\\sigma^2$ unknown.",label="TN2")
+@
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+N3sim <- function(n=3, ss=N, k=2){
+  xmat <- matrix(rnorm(ss*n),ss,n)
+  xmat <- t(apply(xmat,1,"sort"))
+  meanval <- apply(xmat,1,"mean")
+  sumupperval <- apply(xmat[,(n-k+1):n],1,"sum")
+  sumlowerval <- apply(xmat[,1:k],1,"sum")
+  sdval <- apply(xmat,1,"sd")
+  devvalup <- (sumupperval-k*meanval)/sdval
+  devvallow <- (k*meanval - sumlowerval)/sdval
+  round(quantile(pmax(devvalup, devvallow),probs=c(0.90,0.95,0.99)),2)
+
+  
+}
+N3mat <- matrix(NA,16,9)
+N3mat[1:16,1:3] <- t(sapply(5:20,N3sim))
+N3mat[3:16,4:6] <- t(sapply(7:20,N3sim, k=3))
+N3mat[5:16,7:9] <- t(sapply(9:20,N3sim, k=4))
+
+N3mat <- cbind(5:20,N3mat)
+N3mat <- as.data.frame(N3mat)
+colnames(N3mat)[1] <- "n"
+row.names(N3mat) <- 5:20
+
+library(xtable)
+addtorow <- list()
+addtorow$pos <- list(0)
+addtorow$command <- c("& \\multicolumn{3}{c}{$h=2$} &
+\\multicolumn{3}{c}{$h=3$} & \\multicolumn{3}{c}{$h=4$} \\\\ \\n
+$n$ &  \\multicolumn{3}{c}{\\hrulefill} &  \\multicolumn{3}{c}{\\hrulefill} & \\multicolumn{3}{c}{\\hrulefill} \\\\  \\n
+& 10\\% & 5\\% & 1\\% & 10\\% & 5\\% & 1\\% & 10\\% & 5\\% & 1\\% \\\\ \\n")
+
+
+print(xtable(N3mat, digits=c(0,0,2,2,2,2,2,2,2,2,2),caption="Critical Values for N3a: Discordancy test of $h$ extreme outliers in a normal sample with $\\mu$ and $\\sigma^2$ unknown.",
+             label="TN3a"),include.rownames = F, include.colnames=F, size='small', 
+      add.to.row = addtorow)
+
+
+
+@
+
+
+
+
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE,cache=TRUE>>=
+N <- 100000
+N6sim <- function(n=5){
+  xmat <- matrix(rnorm(N*n),N,n)
+  maxval <- apply(xmat,1,"max")
+  minval <- apply(xmat,1,"min")
+  sdval <- apply(xmat,1,"sd")
+  xx <- (maxval-minval)/sdval
+  round(quantile(xx,probs=c(0.90,0.95,0.99)),2)
+}
+
+
+
+
+
+N6mat <- t(sapply(3:20,N6sim))
+row.names(N6mat) <- 3:20
+library(xtable)
+print(xtable(N6mat, label="TN6",caption=
+"Critical Values of N6: Discordancy test of a lower and upper outlier-pair  in a normal sample with $\\mu$ and $\\sigma^2$ unknown.",
+             digits=c(0,3,3,3)))
+@
+
+\clearpage
+
+\subsection{Rolling Standard Deviation}
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+
+
+Nnu3sim <- function(n=3){
+  xmat <- matrix(rnorm(N*n),N,n)
+  meanval <- apply(xmat,1,"mean")
+  sdval <- apply(xmat,1,"sd")
+  maxval <- apply(xmat,1,"max")
+  minval <- apply(xmat,1,"min")
+  sdnuval <- sqrt(rchisq(N,29)/29)
+  xx <- pmax((maxval-meanval)/sdnuval,(meanval-minval)/sdnuval)
+  round(quantile(xx,probs=c(0.90,0.95,0.99)),2)
+}
+
+
+N3numat <- t(sapply(3:20,Nnu3sim))
+row.names(N3numat) <- 3:20
+colnames(N3numat) <- paste0(c(10,5,1),"%")
+library(xtable)
+xtable(N3numat, caption="Critical Values of N$\\nu3$: Discordancy test of an extreme outlier in a normal sample with $\\mu$ unknown and an independent estimate of $\\sigma^2$ known.",label="TNnu3")
+
+
+@
+
+
+
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+Nnu5asim <- function(n=3, ss=N, k=2){
+  xmat <- matrix(rnorm(ss*n),ss,n)
+  xmat <- t(apply(xmat,1,"sort"))
+  meanval <- apply(xmat,1,"mean")
+  sumupperval <- apply(xmat[,(n-k+1):n],1,"sum")
+  sumlowerval <- apply(xmat[,1:k],1,"sum")
+  sdnuval <- sqrt(rchisq(N,29)/29)
+  devvalup <- (sumupperval-k*meanval)/sdnuval
+  devvallow <- (k*meanval - sumlowerval)/sdnuval
+  round(quantile(pmax(devvalup, devvallow),probs=c(0.90,0.95,0.99)),2)
+
+  
+}
+
+
+Nnu5mat <- matrix(NA,16,9)
+Nnu5mat[1:16,1:3] <- t(sapply(5:20,Nnu5asim))
+Nnu5mat[3:16,4:6] <- t(sapply(7:20,Nnu5asim, k=3))
+Nnu5mat[5:16,7:9] <- t(sapply(9:20,Nnu5asim, k=4))
+
+Nnu5mat <- cbind(5:20,Nnu5mat)
+Nnu5mat <- as.data.frame(Nnu5mat)
+colnames(Nnu5mat)[1] <- "n"
+row.names(Nnu5mat) <- 5:20
+
+library(xtable)
+addtorow <- list()
+addtorow$pos <- list(0)
+addtorow$command <- c("& \\multicolumn{3}{c}{$h=2$} &
+\\multicolumn{3}{c}{$h=3$} & \\multicolumn{3}{c}{$h=4$} \\\\ \\n
+$n$ &  \\multicolumn{3}{c}{\\hrulefill} &  \\multicolumn{3}{c}{\\hrulefill} & \\multicolumn{3}{c}{\\hrulefill} \\\\  \\n
+& 10\\% & 5\\% & 1\\% & 10\\% & 5\\% & 1\\% & 10\\% & 5\\% & 1\\% \\\\ \\n")
+
+
+print(xtable(Nnu5mat, digits=c(0,0,2,2,2,2,2,2,2,2,2),caption="Critical Values for N$\\nu5$a: Discordancy test of $h$ extreme outliers in a normal sample with $\\mu$ unknown and and an independent estimate of $\\sigma^2$ known.",
+             label="TNnu5a"),include.rownames = F, include.colnames=F, size='small', 
+      add.to.row = addtorow)
+
+
+
+@
+
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+library(xtable)
+N <- 100000
+Nnu6sim <- function(n =3) {
+    
+    xmat <- matrix(rnorm(N*n),N,n)
+    sdval <- apply(xmat,1,"sd")
+    minval <- apply(X = xmat, MARGIN = 1, FUN = "min")
+    maxval <- apply(X = xmat, MARGIN = 1, FUN = "max")
+    sdnuval <- sqrt(rchisq(N,29)/29)
+  
+    ans <- (maxval - minval)/sdnuval
+    round(quantile(ans, probs =c(0.90, 0.95, 0.99)),2) 
+ 
+}
+
+Nnu6mat <- t(sapply(3:20,Nnu6sim))
+colnames(Nnu6mat) <- paste0(c(10,5,1),"%")
+row.names(Nnu6mat) <- 3:20
+xtable(Nnu6mat, caption=c("Critical Values of N$\\nu6$: Discordancy test of a lower and upper outlier-pair $x_{(1)},x_{(n)}$ in a normal sample with $\\mu$ unknown and and an independent estimate of $\\sigma^2$ known.","Critical Values of N$\\nu6$: Discordancy test of a lower and upper outlier-pair in a normal sample with $\\mu$ and and an independent estimate of $\\sigma^2$ known."),label="TNnu6")
+
+@
+
+
+
+\clearpage
+
+\subsection{Known Standard Deviation}
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+Nsigma2sim <- function(n=3){
+  xmat <- matrix(rnorm(N*n),N,n)
+  meanval <- apply(xmat,1,"mean")
+  sdval <- apply(xmat,1,"sd")
+  maxval <- apply(xmat,1,"max")
+  minval <- apply(xmat,1,"min")
+  xx <- pmax((maxval-meanval),(meanval-minval))
+  round(quantile(xx,probs=c(0.90,0.95,0.99)),2)
+}
+
+Nsigma2mat <- t(sapply(3:20,Nsigma2sim))
+row.names(Nsigma2mat) <- 3:20
+colnames(Nsigma2mat) <- paste0(c(10,5,1),"%")
+library(xtable)
+xtable(Nsigma2mat, caption="Critical Values of N$\\sigma2$: Two-sided discordancy test of an extreme outlier in a normal sample with $\\sigma^2$ known and $\\mu$  unknown.",label="TNsigma2")
+@
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+Nsigma3sim <- function(n=3, ss=N, k=2){
+  xmat <- matrix(rnorm(ss*n),ss,n)
+  xmat <- t(apply(xmat,1,"sort"))
+  meanval <- apply(xmat,1,"mean")
+  sumupperval <- apply(xmat[,(n-k+1):n],1,"sum")
+  sumlowerval <- apply(xmat[,1:k],1,"sum")
+  devvalup <- (sumupperval-k*meanval)
+  devvallow <- (k*meanval - sumlowerval)
+  round(quantile(pmax(devvalup, devvallow),probs=c(0.90,0.95,0.99)),2)
+}
+
+N3sigmat <- matrix(NA,16,9)
+N3sigmat[1:16,1:3] <- t(sapply(5:20,Nsigma3sim))
+N3sigmat[3:16,4:6] <- t(sapply(7:20,Nsigma3sim, k=3))
+N3sigmat[5:16,7:9] <- t(sapply(9:20,Nsigma3sim, k=4))
+
+N3sigmat <- cbind(5:20,N3sigmat)
+N3sigmat <- as.data.frame(N3sigmat)
+colnames(N3sigmat)[1] <- "n"
+row.names(N3sigmat) <- 5:20
+
+library(xtable)
+addtorow <- list()
+addtorow$pos <- list(0)
+addtorow$command <- c("& \\multicolumn{3}{c}{$h=2$} &
+\\multicolumn{3}{c}{$h=3$} & \\multicolumn{3}{c}{$h=4$} \\\\ \\n
+$n$ &  \\multicolumn{3}{c}{\\hrulefill} &  \\multicolumn{3}{c}{\\hrulefill} & \\multicolumn{3}{c}{\\hrulefill} \\\\  \\n
+& 10\\% & 5\\% & 1\\% & 10\\% & 5\\% & 1\\% & 10\\% & 5\\% & 1\\% \\\\ \\n")
+
+
+print(xtable(N3sigmat, digits=c(0,0,2,2,2,2,2,2,2,2,2),caption="Critical Values of N$\\sigma3$: Discordancy test of $h$ extreme outliers in a normal sample with $\\sigma^2$ known and $\\mu$ unknown.",
+             label="TNsigma3a"),include.rownames = F, include.colnames=F, size='small', 
+      add.to.row = addtorow)
+
+@
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+N <- 100000
+nsigma6sim <- function(n=3) {
+  xmat <- matrix(data = rnorm(N*n), nrow = N, ncol = n)
+  maxval <- apply(X = xmat, MARGIN = 1, FUN = "max")
+  minval <- apply(X = xmat, MARGIN =  1, FUN = "min") 
+  round(quantile(maxval-minval, probs = c(0.9, 0.95, 0.99)), 2)
+}
+
+Nsigma6mat <- t(sapply(5:20,nsigma6sim))
+row.names(Nsigma6mat) <- 5:20
+colnames(Nsigma6mat) <-  paste0(c(10,5,1),"%")
+xtable(Nsigma6mat, caption = "Critical Values of N$\\sigma6$: Discordancy test of a lower and upper outlier-pair in a normal sample with with $\\sigma^2$ known and $\\mu$ unknown.",
+       label="TNsigma6")
+
+
+@
+
+\clearpage
+
+\section{References}
+
+\begin{thebibliography}
+
+\noindent Barnett, V. and Lewis.T. (1994). \emph{Outliers in Statistical Data}, 3rd Ed. Wiley: New York.\\
+
+\noindent Diamond, N.T. (2016). Derivation of $k$ factors. ESQUANT Statistical Consulting for EWPAA. 8 August 2016.
+
+\end{thebibliography}
+
+\end{document}
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{cccc}
+& \multicolumn{3}{c}{Standard Deviation} \\ \cline{2-4}
+Sample Size & Estimated & Rolling & Known \\ \hline
+2 & 2.731 & 2.499 & 1.824 \\
+3 & 2.195 & 2.177 & 1.791 \\
+4 & 2.038 & 1.992 & 1.772 \\
+5 & 1.960 & 1.927 & 1.758 \\
+6 & 1.913 & 1.886 & 1.748 \\
+7 & 1.880 & 1.857 & 1.741 \\
+8 & 1.857 & 1.836 & 1.735 \\
+9 & 1.839 & 1.819 & 1.729 \\
+10 & 1.824 & 1.805 & 1.725 \\ \hline
+\end{tabular}
+\caption{$k$ factors for EWPAA Sampling and Testing Program (Assuming re-testing allowed).}
+\label{kfactorsretesting}
+\end{table}
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{cccc}
+& \multicolumn{3}{c}{Standard Deviation} \\ \cline{2-4}
+Sample Size & Estimated & Rolling & Known \\ \hline
+1 & & 1.659 & 1.645 \\
+2 & 2.339 & 1.660 & 1.645 \\
+3 & 1.939 & 1.660 & 1.645 \\
+4 & 1.830 & 1.660 & 1.645 \\
+5 & 1.779 & 1.660 & 1.645 \\
+6 & 1.751 & 1.660 & 1.645 \\
+7 & 1.732 & 1.660 & 1.645 \\
+8 & 1.719 & 1.661 & 1.645 \\
+9 & 1.709 & 1.661 & 1.645 \\
+10 & 1.702 & 1.661 & 1.645 \\
+11 & 1.696 & 1.661 & 1.645 \\
+12 & 1.691 & 1.661 & 1.645 \\
+13 & 1.687 & 1.661 & 1.645 \\
+14 & 1.684 & 1.661 & 1.645 \\
+15 & 1.681 & 1.661 & 1.645 \\
+16 & 1.679 & 1.661 & 1.645 \\
+17 & 1.676 & 1.661 & 1.645 \\
+18 & 1.674 & 1.661 & 1.645 \\
+19 & 1.673 & 1.662 & 1.645 \\
+20 & 1.671 & 1.662 & 1.645 \\ \hline
+\end{tabular}
+\caption{$k$ factors for EWPAA Sampling and Testing Program (single sampling).}
+\label{kfactorsnoretesting}
+\end{table}
+
+
+addtorow <- list()
+addtorow$pos <- list(0,nrow(dmtMat)/4,2*nrow(dmtMat)/4,3*nrow(dmtMat)/4,nrow(dmtMat))
+addtorow$command <- c("& \\multicolumn{9}{c}{Heat Health Temperature Threshold = 34 degrees C} \\\\ \\n
+\\hline   \\multicolumn{1}{l}{{\\bf HW1}} & {\\bf 26/01/09} & {\\bf 27/01/09} & {\\bf 28/01/09} & {\\bf 29/01/09} &
+                      {\\bf 30/01/09} & {\\bf 31/01/09} & {\\bf 01/02/09} & {\\bf 02/02/09} & {\\bf 03/02/09}\\\\ \\n" ,
+                      "\\hline  \\multicolumn{1}{l}{{\\bf HW2}} & {\\bf 04/02/09} & {\\bf 05/02/09} & {\\bf 06/02/09} & {\\bf 07/02/09} &
+                      {\\bf 08/02/09} & {\\bf 09/02/09} & {\\bf 10/02/09}\\\\ \\hline \\n",
+                      "\\hline \\multicolumn{1}{l}{{\\bf HW3}} & {\\bf 12/01/14} & {\\bf 13/01/14} & {\\bf 14/01/14} & {\\bf 15/01/14} &
+                      {\\bf 16/01/14} & {\\bf 17/01/14} & {\\bf 18/01/14} & {\\bf 19/01/14}\\\\ \\hline \\n" ,
+                      "\\hline  \\multicolumn{1}{l}{{\\bf HW4}} & {\\bf 29/01/14} & {\\bf 30/01/14} & 
+                      {\\bf 31/01/14} & {\\bf 01/02/14} & {\\bf 02/02/14} & {\\bf 03/02/14} & {\\bf 04/02/14} \\\\ \\hline \\n",
+"\\hline & \\multicolumn{9}{l}{The measured daily mean temperature is given in each cell of the table.} \\\\ \\hline \\n & \\multicolumn{9}{l}{Locations and Dates corresponding to heatwave days are coloured in pink.} \\\\ \\hline \\n")
+print(xtable(dmtMat,label="malleehw",caption="Heatwaves at Mallee weather stations"), add.to.row = addtorow, include.colnames = FALSE,
+      include.rownames = TRUE,size='tiny')
+      
+\subsubsection{Pooling the information from the between panel standard deviation from the batch currently under consideration with the rolling standard deviation.}
+
+\begin{description}
+\item[$\mbox{N$\nu$2}] Discordancy test of a single upper outlier $x_{(n)}$ in a normal sample with $\mu$ unknown and an independent estimate of $\sigma^2$ known. Test statistic given by
+\[T_{N \nu 2}}=\frac{x_{(n)}-\overline{x}}{\tilde{s}}\]
+where \[\tilde{s}=\sqrt{\frac{(n-1)s^2+\nu s^2_{\nu}}{n-1+\nu}}\]
+Critical values for $T_{N \nu 2}}$ are given in Table~\ref{TNnu2}. For a suspected lower outlier, use the test statistic
+\[T_{N \nu 2}=\frac{\overline{x}-x_{(1)}}{\tilde{s}}\]
+
+\item[$\mbox{N$\nu$5b}$] Discordancy test of $k$ upper outliers $x_{(n-k+1)},\ldots,x_{(n)}$ in a normal sample with $\mu$ and an independent estimate od $\sigma^2$ known. Test statistic given by
+\[T_{N\nu 5b}=\frac{x_{(n-k+1)}+\ldots+x_{(n-1)}+x_{(n)}-k\overline{x}}{\tilde{s}}. \]
+Critical values for $T_{N\nu 5b$ are given in Table~\ref{TNnu5b}. For suspected $k$ lower outliers, use the test statistic
+\[T_{N\nu 5b}=\frac{k\overline{x}-(x_{(1)}+\ldots+x_{(k-1)}+x_{(k)})}{\tilde{s}}. \]
+
+\item[$\mbox{N$\nu$7}$] Discordancy test of a lower and upper outlier-pair $x_{(1}},x_{(n)}$ in a normal sample with $\mu$ and and an independent estimate od $\sigma^2$ known. Test statistic given by
+\[T_{N\nu 7}=\frac{x_{(n)}-x_{(1)}}{\tilde{s}}.\]
+Critical values for $T_{N\nu 7}$ are given in Table~\ref{TNnu7}. 
+
+\end{description}
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE, cache=TRUE>>=
+Nnu2sim <- function(n=3){
+  xmat <- matrix(rnorm(10000*n),10000,n)
+  meanval <- apply(xmat,1,"mean")
+  sdval <- apply(xmat,1,"sd")
+  sdnuval <- sqrt(rchisq(10000,29)/29)
+  sdtilde <- sqrt(((n-1)*sdval^2+29*sdnuval^2)/(n+29-1))
+  maxdev <- (apply(xmat,1,"max")-meanval)/sdtilde
+  round(quantile(maxdev,probs=c(0.90,0.95,0.99)),2)
+}
+
+Nnu2mat <- t(sapply(3:20,Nnu2sim))
+colnames(Nnu2mat) <- paste0(c(10,5,1),"%")
+row.names(Nnu2mat) <- 3:20
+library(xtable)
+xtable(Nnu2mat, caption="Critical Values of N$\\nu2$",label="TNnu2")
+
+nnu5bsim <- function(n=3, k=2) {
+      xmat <- matrix(rnorm(10000*n),10000,n)
+      sdval <- apply(xmat,1,"sd")
+      sdnuval <- sqrt(rchisq(10000,29)/29)
+      sdtilde <- sqrt(((n-1)*sdval^2+29*sdnuval^2)/(n+29-1))
+      maxval <- apply(X = xmat, MARGIN = 1, FUN = "max")
+      sumupperval <- apply(xmat[,(n-k+1):n],1,"sum")
+      meanval <- apply(xmat,1,"mean")
+      ans <- (sumupperval + maxval - (k * meanval)) / sdtilde
+        round(quantile(ans,probs=c(0.90,0.95,0.99)),2)
+
+}
+
+
+
+nnu5bmat <- t(sapply(3:20, nnu5bsim))
+colnames(nnu5bmat) <- paste0(c(10,5,1),"%")
+row.names(nnu5bmat) <- 3:20
+xtable(nnu5bmat, caption="Critical Values of N$\\nu5b$",label="TNnu5b")
+
+
+library(xtable)
+Nnu7sim <- function(n =3) {
+    
+    xmat <- matrix(rnorm(10000*n),10000,n)
+    sdval <- apply(xmat,1,"sd")
+    minval <- apply(X = xmat, MARGIN = 1, FUN = "min")
+    maxval <- apply(X = xmat, MARGIN = 1, FUN = "max")
+    sdnuval <- sqrt(rchisq(10000,29)/29)
+    sdtilde <- sqrt(((n-1)*sdval^2+29*sdnuval^2)/(n+29-1))
+    ans <- (maxval - minval)/sdtilde
+    round(quantile(ans, probs =c(0.90, 0.95, 0.99)),2) 
+ 
+}
+
+Nnu7mat <- t(sapply(3:20,Nnu7sim))
+colnames(Nnu7mat) <- paste0(c(10,5,1),"%")
+row.names(Nnu7mat) <- 3:20
+xtable(Nnu7mat, caption="Critical Values of N$\\nu7$",label="TNnu7")
+
+@      
