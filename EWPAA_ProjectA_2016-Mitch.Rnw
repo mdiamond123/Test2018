@@ -490,7 +490,6 @@ ggplot(data = newdata, aes(x = ab, y = cb, col = ef)) +
 around the outliers is quarantined.}
 
 \end{figure}
- s
 
 \subsection{Two or more non-contiguous outliers}
 
